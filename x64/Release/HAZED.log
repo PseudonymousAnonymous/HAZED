@@ -1,0 +1,4 @@
+﻿  HAZED.c
+C:\Users\PseudonymousGarbage\Desktop\Hazed\HAZED.c(13,12): warning C4026: function declared with formal parameter list
+MSVCRT.lib(exe_main.obj) : error LNK2001: unresolved external symbol main
+C:\Users\PseudonymousGarbage\Desktop\HAZED\x64\Release\HAZED.exe : fatal error LNK1120: 1 unresolved externals
