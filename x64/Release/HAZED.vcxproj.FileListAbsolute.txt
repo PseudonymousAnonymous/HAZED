@@ -1,1 +1,4 @@
 C:\Users\PseudonymousGarbage\Desktop\HAZED\x64\Release\HAZED.exe
+C:\Users\PseudonymousGarbage\Desktop\HAZEDLocal\x64\Release\HAZED.exe
+C:\Users\PseudonymousGarbage\Desktop\HAZEDLocal\x64\Release\HAZED.vcxproj.CopyComplete
+C:\Users\PseudonymousGarbage\Desktop\HAZEDLocal\x64\Release\SDL2.dll

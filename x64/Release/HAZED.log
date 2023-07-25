@@ -1,4 +1,8 @@
 ﻿  HAZED.c
-C:\Users\PseudonymousGarbage\Desktop\Hazed\HAZED.c(13,12): warning C4026: function declared with formal parameter list
-MSVCRT.lib(exe_main.obj) : error LNK2001: unresolved external symbol main
-C:\Users\PseudonymousGarbage\Desktop\HAZED\x64\Release\HAZED.exe : fatal error LNK1120: 1 unresolved externals
+C:\Users\PseudonymousGarbage\Desktop\HAZEDLocal\HAZED.c(14,16): warning C4026: function declared with formal parameter list
+  Generating code
+  5 of 6 functions (83.3%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  HAZED.vcxproj -> C:\Users\PseudonymousGarbage\Desktop\HAZEDLocal\x64\Release\HAZED.exe

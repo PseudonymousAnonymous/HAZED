@@ -1,5 +1,6 @@
 #include "HAZED.h"
 
+
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
@@ -10,60 +11,99 @@ float D_Z[8];
 float B_X[8];
 float B_Y[8];
 
-int main() {
+int main(void) {
+
+    SDL_Window* window;
+    SDL_Renderer* renderer;
+    SDL_Event event;
+    int quit = 0;
+
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        fprintf(stderr, "SDL initialization failed: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
+
     Cube testCube;
-    Camera playerCamera;
+
+    Camera playerCamera = {
+        .cameraPos = { 0.0f, 0.0f, -5.0f },
+        .cameraRot = { 0.0f, 0.0f, 0.0f },
+        .displayPlane = { 0.0f, 0.0f, 1.0f }
+    };
+
+    float nearClip = 0.1f;
+    float farClip = 100.0f;
 
     setCubePoints(&testCube);
 
-    // Initialize playerCamera to default values
-    playerCamera.cameraPos.x = 0.0;
-    playerCamera.cameraPos.y = -5.0;
-    playerCamera.cameraPos.z = 0.0;
+    while (!quit) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                quit = 1;
+            }
+            if (event.type == SDL_KEYDOWN) {
+                switch (event.key.keysym.sym) {
 
-    playerCamera.cameraRot.x = 0.0;
-    playerCamera.cameraRot.y = 0.0;
-    playerCamera.cameraRot.z = 0.0;
+                case SDLK_SPACE:
+                    playerCamera.cameraPos.y += 0.001f;
+                    playerCamera.displayPlane.y += 0.001f;
+                    break;
 
-    playerCamera.displayPlane.x = 0.0;
-    playerCamera.displayPlane.y = 2.0;
-    playerCamera.displayPlane.z = 0.0;
+                case SDLK_LSHIFT:
+                    playerCamera.cameraPos.y -= 0.001f;
+                    playerCamera.displayPlane.y -= 0.001f;
+                    break;
 
-    for (int i = 0; i < 8; i++) {
-        testCube.distanceToCamera[i].x = testCube.points[i].x - playerCamera.cameraPos.x;
-        testCube.distanceToCamera[i].y = testCube.points[i].y - playerCamera.cameraPos.y;
-        testCube.distanceToCamera[i].z = testCube.points[i].z - playerCamera.cameraPos.z;
+                case SDLK_a:
+                    playerCamera.cameraPos.x += 0.001f;
+                    playerCamera.displayPlane.x += 0.001f;
+                    break;
 
-        float cx = cosf(playerCamera.cameraRot.x);
-        float cy = cosf(playerCamera.cameraRot.y);
-        float cz = cosf(playerCamera.cameraRot.z);
+                case SDLK_d:
+                    playerCamera.cameraPos.x -= 0.001f;
+                    playerCamera.displayPlane.x -= 0.001f;
+                    break;
 
-        float sx = sinf(playerCamera.cameraRot.x);
-        float sy = sinf(playerCamera.cameraRot.y);
-        float sz = sinf(playerCamera.cameraRot.z);
+                case SDLK_s:
+                    playerCamera.cameraPos.z -= 0.001f;
+                    playerCamera.displayPlane.z -= 0.001f;
+                    break;
 
-        float X = testCube.distanceToCamera[i].x;
-        float Y = testCube.distanceToCamera[i].y;
-        float Z = testCube.distanceToCamera[i].z;
+                case SDLK_w:
+                    playerCamera.cameraPos.z += 0.001f;
+                    playerCamera.displayPlane.z += 0.001f;
+                    break;
 
-        float ex = playerCamera.displayPlane.x;
-        float ey = playerCamera.displayPlane.y;
-        float ez = playerCamera.displayPlane.z;
-
-        D_X[i] = cy * ((sz * Y) + (cz * X)) - (sy * Z);
-        D_Y[i] = sx * ((cy * Z) + (sy * ((sz * Y) + (cz * X)))) + (cx * ((cz * Y) - (sz * X)));
-        D_Z[i] = cx * ((cy * Z) + (sy * ((sz * Y) + (cz * X)))) - (sx * ((cz * Y) - (sz * X)));
-
-        if (D_Z[i] == 0) {
-            D_Z[i] += 0.001f;
+                default:
+                    break;
+                }
+            }
         }
 
-        B_X[i] = ((ez / D_Z[i]) * D_X[i]) + ex;
-        B_Y[i] = ((ez / D_Z[i]) * D_Y[i]) + ey;
+        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+        SDL_RenderClear(renderer);
 
-        printf("%f \n", B_X[i]);
-        printf("%f \n", B_Y[i]);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+        
+
+        for (int i = 0; i < 8; i++) {
+
+            testCube.distanceToCamera[i].x = testCube.points[i].x - playerCamera.cameraPos.x;
+            testCube.distanceToCamera[i].y = testCube.points[i].y - playerCamera.cameraPos.y;
+            testCube.distanceToCamera[i].z = testCube.points[i].z - playerCamera.cameraPos.z;
+        }
+
+        projectAndRender(renderer, &playerCamera, &testCube, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+        SDL_RenderPresent(renderer);
     }
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 
     return 0;
 }
