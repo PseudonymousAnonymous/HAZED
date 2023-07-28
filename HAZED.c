@@ -1,16 +1,5 @@
 #include "HAZED.h"
 
-
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
-
-float D_X[8];
-float D_Y[8];
-float D_Z[8];
-
-float B_X[8];
-float B_Y[8];
-
 int main(void) {
 
     SDL_Window* window;
@@ -24,6 +13,8 @@ int main(void) {
     }
 
     SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
+    SDL_ShowCursor(SDL_DISABLE);
+    SDL_SetRelativeMouseMode(SDL_TRUE);
 
     Cube testCube;
 
@@ -33,61 +24,22 @@ int main(void) {
         .displayPlane = { 0.0f, 0.0f, 1.0f }
     };
 
-    float nearClip = 0.1f;
-    float farClip = 100.0f;
 
     setCubePoints(&testCube);
 
     while (!quit) {
+
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 quit = 1;
             }
-            if (event.type == SDL_KEYDOWN) {
-                switch (event.key.keysym.sym) {
-
-                case SDLK_SPACE:
-                    playerCamera.cameraPos.y += 0.001f;
-                    playerCamera.displayPlane.y += 0.001f;
-                    break;
-
-                case SDLK_LSHIFT:
-                    playerCamera.cameraPos.y -= 0.001f;
-                    playerCamera.displayPlane.y -= 0.001f;
-                    break;
-
-                case SDLK_a:
-                    playerCamera.cameraPos.x += 0.001f;
-                    playerCamera.displayPlane.x += 0.001f;
-                    break;
-
-                case SDLK_d:
-                    playerCamera.cameraPos.x -= 0.001f;
-                    playerCamera.displayPlane.x -= 0.001f;
-                    break;
-
-                case SDLK_s:
-                    playerCamera.cameraPos.z -= 0.001f;
-                    playerCamera.displayPlane.z -= 0.001f;
-                    break;
-
-                case SDLK_w:
-                    playerCamera.cameraPos.z += 0.001f;
-                    playerCamera.displayPlane.z += 0.001f;
-                    break;
-
-                default:
-                    break;
-                }
-            }
+            handleInput(&playerCamera, &event);
         }
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
         SDL_RenderClear(renderer);
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-
-        
 
         for (int i = 0; i < 8; i++) {
 

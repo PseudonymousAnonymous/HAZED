@@ -1,11 +1,26 @@
 #pragma once
+
+#define WINDOW_WIDTH 1920
+#define WINDOW_HEIGHT 1080
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <math.h>
 
 #include <SDL2/SDL.h>
 #include "dataTypes.h"
+#include "input.h"
 
+float D_X[8];
+float D_Y[8];
+float D_Z[8];
+
+float B_X[8];
+float B_Y[8];
+
+float nearClip = 0.1f;
+float farClip = 100.0f;
 
 void setCubePoints(Cube* thisCube) {
 	thisCube->points[0].x = 0;
@@ -45,6 +60,9 @@ void projectAndRender(SDL_Renderer* renderer, const Camera* camera, const Cube* 
     float nearClip = 0.1f;
     float farClip = 100.0f;
 
+    int pointX[8];
+    int pointY[8];
+
     for (int i = 0; i < 8; i++) {
         float X = cube->distanceToCamera[i].x;
         float Y = cube->distanceToCamera[i].y;
@@ -78,9 +96,13 @@ void projectAndRender(SDL_Renderer* renderer, const Camera* camera, const Cube* 
         }
 
         // Convert the 3D coordinates to 2D screen coordinates
-        int screenX = (int)(projectedX * (windowWidth / 2)) + (windowWidth / 2);
-        int screenY = (int)(projectedY * (windowHeight / 2)) + (windowHeight / 2);
+        pointX[i] = (int)(projectedX * (windowWidth / 2)) + (windowWidth / 2);
+        pointY[i] = (int)(projectedY * (windowHeight / 2)) + (windowHeight / 2);
 
-        SDL_RenderDrawPoint(renderer, screenX, screenY);
+        SDL_RenderDrawPoint(renderer, pointX[i], pointY[i]);
+        
+        if (i > 0) {
+            SDL_RenderDrawLine(renderer, pointX[i - 1], pointY[i - 1], pointX[i], pointY[i]);
+        }
     }
 }

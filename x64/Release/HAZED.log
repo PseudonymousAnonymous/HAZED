@@ -1,8 +1,10 @@
 ﻿  HAZED.c
-C:\Users\PseudonymousGarbage\Desktop\HAZEDLocal\HAZED.c(14,16): warning C4026: function declared with formal parameter list
+C:\Users\PseudonymousGarbage\Desktop\HAZEDLocal\input.h(53,42): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
+C:\Users\PseudonymousGarbage\Desktop\HAZEDLocal\input.h(54,42): warning C4244: '=': conversion from 'Sint32' to 'float', possible loss of data
+C:\Users\PseudonymousGarbage\Desktop\HAZEDLocal\HAZED.c(3,16): warning C4026: function declared with formal parameter list
   Generating code
-  5 of 6 functions (83.3%) were compiled, the rest were copied from previous compilation.
-    1 functions were new in current compilation
+  0 of 8 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   HAZED.vcxproj -> C:\Users\PseudonymousGarbage\Desktop\HAZEDLocal\x64\Release\HAZED.exe

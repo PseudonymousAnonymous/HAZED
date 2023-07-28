@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClInclude Include="dataTypes.h" />
     <ClInclude Include="HAZED.h" />
+    <ClInclude Include="input.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="E:\vcpkg\packages\sdl2_x64-windows\bin\SDL2.dll" />
