@@ -5,63 +5,46 @@ float mouseRelX, mouseRelY;
 
 const float sensitivity = 0.001f;
 
-float convertAngle(float angle) {
-    return fmodf(fmodf(angle, 360.0f) + 360.0f, 360.0f);
+float convertToPositiveAngle(float angle) {
+    const float twoPi = 2.0f * M_PI;
+    return fmodf(fmodf(angle, twoPi) + twoPi, twoPi);
 }
 
 void handleInput(Camera* playerCamera, SDL_Event* event) {
-        if (event->type == SDL_KEYDOWN) {
-            switch (event->key.keysym.sym) {
-            case SDLK_SPACE:
-                playerCamera->cameraPos.y += 0.1f;
-                break;
+    
+    const Uint8* keys = SDL_GetKeyboardState(NULL);
 
-            case SDLK_LSHIFT:
-                playerCamera->cameraPos.y -= 0.1f;
-                break;
-
-            case SDLK_a:
-                playerCamera->cameraPos.x -= 0.1f;
-                break;
-
-            case SDLK_d:
-                playerCamera->cameraPos.x += 0.1f;
-                break;
-
-            case SDLK_s:
-                playerCamera->cameraPos.z -= 0.1f;
-                break;
-
-            case SDLK_w:
-                playerCamera->cameraPos.z += 0.1f;
-                break;
-
-            default:
-                break;
+            if (keys[SDL_SCANCODE_A]) {
+                float lateralMovement = 0.1f;
+                float cosYaw = cosf(playerCamera->cameraRot.y);
+                float sinYaw = sinf(playerCamera->cameraRot.y);
+                playerCamera->cameraPos.x -= lateralMovement * cosYaw;
+                playerCamera->cameraPos.z += lateralMovement * sinYaw;
             }
-        }
-        if (event->type == SDL_MOUSEMOTION) {
 
-            mouseMotion = true;
-
-            //playerCamera->cameraRot.x = convertAngle(playerCamera->cameraRot.x);
-            //playerCamera->cameraRot.y = convertAngle(playerCamera->cameraRot.y);
-
-            printf("Angles (X, Y) %f, %f \n", playerCamera->cameraRot.x, playerCamera->cameraRot.y);
-
-            if (!mouseFirst) {
-                mouseRelX = event->motion.xrel;
-                mouseRelY = event->motion.yrel;
+            if (keys[SDL_SCANCODE_D]) {
+                float lateralMovement = 0.1f;
+                float cosYaw = cosf(playerCamera->cameraRot.y);
+                float sinYaw = sinf(playerCamera->cameraRot.y);
+                playerCamera->cameraPos.x += lateralMovement * cosYaw;
+                playerCamera->cameraPos.z -= lateralMovement * sinYaw;
             }
-            else {
-                mouseFirst = false;
-                mouseRelX = 0;
-                mouseRelY = 0;
+
+            if (keys[SDL_SCANCODE_S]) {
+                float forwardMovement = 0.1f;
+                float cosYaw = cosf(playerCamera->cameraRot.y);
+                float sinYaw = sinf(playerCamera->cameraRot.y);
+                playerCamera->cameraPos.x -= forwardMovement * sinYaw;
+                playerCamera->cameraPos.z -= forwardMovement * cosYaw;
             }
-            if (mouseMotion) {
-                mouseMotion = false;
-                playerCamera->cameraRot.y += mouseRelX * sensitivity;
-                playerCamera->cameraRot.x -= mouseRelY * sensitivity;
+
+            if (keys[SDL_SCANCODE_W]) {
+                float forwardMovement = 0.1f;
+                float cosYaw = cosf(playerCamera->cameraRot.y);
+                float sinYaw = sinf(playerCamera->cameraRot.y);
+                playerCamera->cameraPos.x += forwardMovement * sinYaw;
+                playerCamera->cameraPos.z += forwardMovement * cosYaw;
             }
-        }
+
+            printf("POS (X, Y, Z) %f, %f, %f \n", playerCamera->cameraPos.x, playerCamera->cameraPos.y, playerCamera->cameraPos.z);
 }

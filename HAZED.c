@@ -29,12 +29,40 @@ int main(void) {
 
     while (!quit) {
 
+        playerCamera.cameraRot.x = convertToPositiveAngle(playerCamera.cameraRot.x);
+        playerCamera.cameraRot.y = convertToPositiveAngle(playerCamera.cameraRot.y);
+
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 quit = 1;
             }
-            handleInput(&playerCamera, &event);
+            if (event.type == SDL_MOUSEMOTION) {
+
+                mouseMotion = true;
+
+                //playerCamera->cameraRot.x = convertAngle(playerCamera->cameraRot.x);
+                //playerCamera->cameraRot.y = convertAngle(playerCamera->cameraRot.y);
+
+                printf("Angles (X, Y) %f, %f \n", playerCamera.cameraRot.x, playerCamera.cameraRot.y);
+
+                if (!mouseFirst) {
+                    mouseRelX = event.motion.xrel;
+                    mouseRelY = event.motion.yrel;
+                }
+                else {
+                    mouseFirst = false;
+                    mouseRelX = 0;
+                    mouseRelY = 0;
+                }
+                if (mouseMotion) {
+                    mouseMotion = false;
+                    playerCamera.cameraRot.y += mouseRelX * sensitivity;
+                    playerCamera.cameraRot.x -= mouseRelY * sensitivity;
+                }
+            }
         }
+
+        handleInput(&playerCamera, &event);
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
         SDL_RenderClear(renderer);
