@@ -25,7 +25,7 @@ float convertToPositiveAngle(float angle) {
 
 void handleInput(Camera* playerCamera, SDL_Event* event) {
 
-    printf("Camera Y %f \n", playerCamera->cameraPos.y);
+    //printf("Camera Y %f \n", playerCamera->cameraPos.y);
 
     if (isJumping == true) {
         if (velocity < 0) {

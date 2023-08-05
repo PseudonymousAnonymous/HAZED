@@ -1,5 +1,6 @@
 typedef struct {
     int x, y;
+    bool willBeDrawn;
 }VECT2D;
 
 typedef struct {
@@ -8,7 +9,7 @@ typedef struct {
 
 typedef struct {
     VECT3D* points;
-    VECT3D* distanceToCamera;
+    VECT3D distanceToCamera[3];
     int numVertices;
 }Object;
 
@@ -18,3 +19,7 @@ typedef struct {
     VECT3D displayPlane;
     float neededYPos;
 }Camera;
+
+typedef struct {
+    int red, green, blue;
+}Color;

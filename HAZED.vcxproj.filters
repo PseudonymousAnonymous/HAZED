@@ -29,10 +29,19 @@
     <ClInclude Include="input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="convexHull.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="E:\vcpkg\packages\sdl2_x64-windows\bin\SDL2.dll">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\sky.txt">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -1,5 +1,14 @@
 #include "HAZED.h"
 
+int numberOfScenes;
+
+
+int currentScene = 0;
+int numberOfObjects;
+
+char filePathExt[200];
+char filePathExtOb[200];
+
 int main(void) {
 
     SDL_Window* window;
@@ -16,101 +25,103 @@ int main(void) {
     SDL_ShowCursor(SDL_DISABLE);
     SDL_SetRelativeMouseMode(SDL_TRUE);
 
-    Object objects[2];
-
-    VECT3D cubeVertices[8] = {
-        {0, 0, 0},
-        {1, 0, 0},
-        {1, 1, 0},
-        {0, 1, 0},
-        {0, 0, 1},
-        {1, 0, 1},
-        {1, 1, 1},
-        {0, 1, 1}
-    };
-
-    VECT3D cubeDistances[8]; // Initialized later
-    objects[0].points = cubeVertices;
-    objects[0].distanceToCamera = cubeDistances;
-    objects[0].numVertices = 8;
-
-    // Object 2 - A pyramid
-    VECT3D pyramidVertices[5] = {
-        {0.5, -2, 0.5},
-        {0, -3, 0},
-        {1, -3, 0},
-        {1, -3, 1},
-        {0, -3, 1}
-    };
-
-    VECT3D pyramidDistances[5]; // Initialized later
-    objects[1].points = pyramidVertices;
-    objects[1].distanceToCamera = pyramidDistances;
-    objects[1].numVertices = 5;
-
+    SDL_Surface* pSurface = SDL_GetWindowSurface(window);
+    SDL_LockSurface(pSurface);
 
     Camera playerCamera = {
-        .cameraPos = { 0.0f, 0.0f, -5.0f },
+        .cameraPos = { 0.0f, -1.0f, -5.0f },
         .cameraRot = { 0.0f, 0.0f, 0.0f },
         .displayPlane = { 0.0f, 0.0f, 1.1f },
-        .neededYPos = 0.0f
+        .neededYPos = -1.0f
     };
 
-    while (!quit) {
+    loadSkyImage("sky.txt");
 
-        playerCamera.cameraRot.x = convertToPositiveAngle(playerCamera.cameraRot.x);
-        playerCamera.cameraRot.y = convertToPositiveAngle(playerCamera.cameraRot.y);
+    numberOfScenes = loadCount("scenes/sceneNum.txt");
 
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                quit = 1;
-            }
-            if (event.type == SDL_MOUSEMOTION) {
+    printf("Number of Scenes: %d\n", numberOfScenes);
 
-                mouseMotion = true;
+    sprintf(filePathExt, "scenes/%d/num.txt", currentScene);
 
-                //printf("Angles (X, Y) %f, %f \n", playerCamera.cameraRot.x, playerCamera.cameraRot.y);
+    numberOfObjects = loadCount(filePathExt);
 
-                if (!mouseFirst) {
-                    mouseRelX = event.motion.xrel;
-                    mouseRelY = event.motion.yrel;
-                }
-                else {
-                    mouseFirst = false;
-                    mouseRelX = 0;
-                    mouseRelY = 0;
-                }
-                if (mouseMotion) {
-                    mouseMotion = false;
-                    playerCamera.cameraRot.y += mouseRelX * sensitivity;
-                    playerCamera.cameraRot.x -= mouseRelY * sensitivity;
-                }
-            }
-        }
-
-        handleInput(&playerCamera, &event);
-
-        SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-        SDL_RenderClear(renderer);
-
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < objects[i].numVertices; j++) {
-                objects[i].distanceToCamera[j].x = objects[i].points[j].x - playerCamera.cameraPos.x;
-                objects[i].distanceToCamera[j].y = objects[i].points[j].y - playerCamera.cameraPos.y;
-                objects[i].distanceToCamera[j].z = objects[i].points[j].z - playerCamera.cameraPos.z;
-            }
-        }
-
-        projectAndRender(renderer, &playerCamera, objects, 2);
-
-        SDL_RenderPresent(renderer);
+    Object* objects = (Object*)malloc(numberOfObjects * sizeof(Object));
+    if (objects == NULL) {
+        printf("Memory allocation failed for objects.\n");
+        return 1;
     }
 
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+        printf("Number of Objects in Scene %d: %d\n", currentScene, numberOfObjects);
 
-    return 0;
+        if (!loadObjectsFromScene("scenes", currentScene, &objects, &numberOfObjects)) {
+            printf("Failed to load objects for Scene %d.\n", currentScene);
+            freeImageData();
+            SDL_DestroyRenderer(renderer);
+            SDL_DestroyWindow(window);
+            SDL_Quit();
+            return 1;
+        }
+
+        while (!quit) {
+
+            playerCamera.cameraRot.x = convertToPositiveAngle(playerCamera.cameraRot.x);
+            playerCamera.cameraRot.y = convertToPositiveAngle(playerCamera.cameraRot.y);
+
+            while (SDL_PollEvent(&event)) {
+                if (event.type == SDL_QUIT) {
+                    quit = 1;
+                }
+                if (event.type == SDL_MOUSEMOTION) {
+
+                    mouseMotion = true;
+
+                    //printf("Angles (X, Y) %f, %f \n", playerCamera.cameraRot.x, playerCamera.cameraRot.y);
+
+                    if (!mouseFirst) {
+                        mouseRelX = (float)event.motion.xrel;
+                        mouseRelY = (float)event.motion.yrel;
+                    }
+                    else {
+                        mouseFirst = false;
+                        mouseRelX = 0;
+                        mouseRelY = 0;
+                    }
+                    if (mouseMotion) {
+                        mouseMotion = false;
+                        playerCamera.cameraRot.y += mouseRelX * sensitivity;
+                        playerCamera.cameraRot.x -= mouseRelY * sensitivity;
+                    }
+                }
+            }
+
+            handleInput(&playerCamera, &event);
+
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderClear(renderer);
+
+            //drawBackground(renderer);
+
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+            for (int i = 0; i < numberOfObjects; i++) {
+                for (int j = 0; j < objects[i].numVertices; j++) {
+                    objects[i].distanceToCamera[j].x = objects[i].points[j].x - playerCamera.cameraPos.x;
+                    objects[i].distanceToCamera[j].y = objects[i].points[j].y - playerCamera.cameraPos.y;
+                    objects[i].distanceToCamera[j].z = objects[i].points[j].z - playerCamera.cameraPos.z;
+                }
+            }
+
+            projectAndRender(renderer, &playerCamera, objects, numberOfObjects);
+
+            SDL_RenderPresent(renderer);
+        }
+
+        free(objects);
+        freeImageData();
+
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+
+        return 0;
 }
